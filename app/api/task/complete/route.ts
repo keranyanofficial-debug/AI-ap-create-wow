@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { subDays, format } from "date-fns";
+import { subDays } from "date-fns";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getTodayString } from "@/lib/date";
+import { getDateStringForTimezone, getTodayString } from "@/lib/date";
 import { xpForDifficulty } from "@/lib/task-utils";
 
 export async function POST() {
@@ -15,7 +15,15 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const today = getTodayString();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const timezone =
+    profile?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const today = getTodayString(timezone);
   const { data: task } = await supabase
     .from("tasks")
     .select("*")
@@ -54,7 +62,10 @@ export async function POST() {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const yesterday = format(subDays(new Date(), 1), "yyyy-MM-dd");
+  const yesterday = getDateStringForTimezone(
+    subDays(new Date(), 1),
+    timezone
+  );
   const { data: yesterdayTask } = await supabase
     .from("tasks")
     .select("id")

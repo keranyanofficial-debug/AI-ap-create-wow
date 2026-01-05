@@ -19,12 +19,20 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const today = getTodayString();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const timezone =
+    profile?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const today = getTodayString(timezone);
 
   await supabase.from("profiles").upsert({
     id: user.id,
     name: user.email?.split("@")[0] ?? "ユーザー",
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    timezone
   });
 
   const { data: existing } = await supabase

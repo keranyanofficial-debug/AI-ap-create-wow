@@ -52,7 +52,7 @@ create policy "Profiles are editable by owner" on profiles
   for insert with check (auth.uid() = id);
 
 create policy "Profiles are updatable by owner" on profiles
-  for update using (auth.uid() = id);
+  for update using (auth.uid() = id) with check (auth.uid() = id);
 
 create policy "Profiles are deletable by owner" on profiles
   for delete using (auth.uid() = id);
@@ -64,7 +64,7 @@ create policy "Tasks are insertable by owner" on tasks
   for insert with check (auth.uid() = user_id);
 
 create policy "Tasks are updatable by owner" on tasks
-  for update using (auth.uid() = user_id);
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "Tasks are deletable by owner" on tasks
   for delete using (auth.uid() = user_id);
@@ -76,7 +76,7 @@ create policy "Stats are insertable by owner" on stats
   for insert with check (auth.uid() = user_id);
 
 create policy "Stats are updatable by owner" on stats
-  for update using (auth.uid() = user_id);
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "Stats are deletable by owner" on stats
   for delete using (auth.uid() = user_id);
@@ -88,7 +88,7 @@ create policy "Weekly summaries are insertable by owner" on weekly_summaries
   for insert with check (auth.uid() = user_id);
 
 create policy "Weekly summaries are updatable by owner" on weekly_summaries
-  for update using (auth.uid() = user_id);
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "Weekly summaries are deletable by owner" on weekly_summaries
   for delete using (auth.uid() = user_id);
