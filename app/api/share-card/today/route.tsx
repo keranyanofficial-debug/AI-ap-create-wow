@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getTodayString } from "@/lib/date";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET() {
   const supabase = createSupabaseServerClient();

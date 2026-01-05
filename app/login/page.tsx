@@ -38,6 +38,12 @@ export default function LoginPage() {
       return;
     }
 
+    if (mode === "signup" && !result.data.session) {
+      setMessage("確認メールを送信しました。メールのリンクからログインしてください。");
+      setLoading(false);
+      return;
+    }
+
     router.replace("/app");
   };
 

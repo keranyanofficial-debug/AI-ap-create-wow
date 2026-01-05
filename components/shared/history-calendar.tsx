@@ -22,13 +22,24 @@ export function HistoryCalendar() {
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selected, setSelected] = useState<Task | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      const month = format(currentMonth, "yyyy-MM");
-      const res = await fetch(`/api/history?month=${month}`);
-      const data = (await res.json()) as { tasks: Task[] };
-      setTasks(data.tasks);
+      setLoading(true);
+      setError(null);
+      try {
+        const month = format(currentMonth, "yyyy-MM");
+        const res = await fetch(`/api/history?month=${month}`);
+        if (!res.ok) throw new Error("failed");
+        const data = (await res.json()) as { tasks: Task[] };
+        setTasks(data.tasks);
+      } catch (err) {
+        setError("履歴の取得に失敗しました。時間を置いて再試行してください。");
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [currentMonth]);
@@ -80,6 +91,14 @@ export function HistoryCalendar() {
         </div>
       </div>
       <Card className="overflow-hidden border-none bg-muted/30 p-4">
+        {error && (
+          <div className="mb-3 rounded-2xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {error}
+          </div>
+        )}
+        {loading && (
+          <div className="mb-3 text-xs text-muted-foreground">読み込み中...</div>
+        )}
         <div className="grid grid-cols-7 gap-2 text-xs text-muted-foreground">
           {["月", "火", "水", "木", "金", "土", "日"].map((label) => (
             <div key={label} className="text-center">
